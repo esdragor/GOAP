@@ -3,12 +3,12 @@
 
 #include "PlannerUtils.h"
 
-TArray<TArray<TSubclassOf<UAgentAction>*>*> *UPlannerUtils::allBranches = nullptr;
+TArray<TArray<TSubclassOf<UAgentAction>>> *UPlannerUtils::allBranches = nullptr;
 
-TArray<TSubclassOf<UAgentAction>*> UPlannerUtils::MakePlanActions(TArray<TSubclassOf<UAgentAction>*>* allActions,
+TArray<TSubclassOf<UAgentAction>> UPlannerUtils::MakePlanActions(TArray<TSubclassOf<UAgentAction>> allActions,
                                                      TArray<EWorldStateEnum>* worldState, TArray<EGoalEnum>* goals)
 {
-	TArray<TSubclassOf<UAgentAction>*> tree;
+	TArray<TSubclassOf<UAgentAction>> tree;
 
 	for (int i = 0; i < goals->Num(); ++i)
 	{
@@ -21,17 +21,17 @@ TArray<TSubclassOf<UAgentAction>*> UPlannerUtils::MakePlanActions(TArray<TSubcla
 	return tree;
 }
 
-bool UPlannerUtils::TryAddingActionWithDesiredGoal(TArray<TSubclassOf<UAgentAction>*>* allActions,
+bool UPlannerUtils::TryAddingActionWithDesiredGoal(TArray<TSubclassOf<UAgentAction>> allActions,
                                                    TArray<EWorldStateEnum>* worldState,
                                                    TArray<EWorldStateEnum> *conditionsForLinking,
-                                                   TArray<TSubclassOf<UAgentAction>*>& branch)
+                                                   TArray<TSubclassOf<UAgentAction>> branch)
 {
 	TArray<TSubclassOf<UAgentAction>*> actionsWithDesiredGoals;
-	for (int i = 0; i < allActions->Num(); ++i)
+	for (int i = 0; i < allActions.Num(); ++i)
 	{
 		// a tester 
-		TSubclassOf<UAgentAction>* currentAction = (*allActions)[i];
-		TArray<EWorldStateEnum> *worldStateResults = currentAction->GetDefaultObject()->GetResults();
+		TSubclassOf<UAgentAction> currentAction = (allActions)[i];
+		TArray<EWorldStateEnum> *worldStateResults = currentAction->GetDefaultObject<UAgentAction>()->GetResults();
 		TArray<EWorldStateEnum> *conditionsToCheck = conditionsForLinking;
 
 		for (int j = 0; j < worldStateResults->Num(); ++j)
@@ -63,21 +63,21 @@ bool UPlannerUtils::TryAddingActionWithDesiredGoal(TArray<TSubclassOf<UAgentActi
 			branch.Add(currentAction);
 			if (CheckAutoSuficentCondition(currentAction, worldState))
 			{
-				allBranches->Add(&branch);
+				allBranches->Add(branch);
 				return true;
 				// c'est good :)
 			}
 			else
 			{
-				TryAddingActionWithDesiredGoal(allActions, worldState, currentAction->GetDefaultObject()->GetConditions(), branch);
+				TryAddingActionWithDesiredGoal(allActions, worldState, currentAction->GetDefaultObject<UAgentAction>()->GetConditions(), branch);
 			}
 		}
 	}
 	return false;
 }
 
-bool UPlannerUtils::TryBuildTreeAction(TArray<TSubclassOf<UAgentAction>*>* allActions, TArray<EWorldStateEnum>* worldState,
-                                       EGoalEnum goal, TArray<TSubclassOf<UAgentAction>*>& tree)
+bool UPlannerUtils::TryBuildTreeAction(TArray<TSubclassOf<UAgentAction>> allActions, TArray<EWorldStateEnum>* worldState,
+                                       EGoalEnum goal, TArray<TSubclassOf<UAgentAction>>& tree)
 {
 	// Iterate on each action
 	// Store All actions with return goal == goal, else return false if not found
@@ -86,13 +86,13 @@ bool UPlannerUtils::TryBuildTreeAction(TArray<TSubclassOf<UAgentAction>*>* allAc
 	// Iterate on the tree List, if treeSize > 0
 	// Get the shortest tree
 	// Return the shortest tree
-	TArray<TSubclassOf<UAgentAction>*> actionsWithDesiredGoals;
-	allBranches = new TArray<TArray<TSubclassOf<UAgentAction>*>*>;
-	for (int i = 0; i < allActions->Num(); ++i)
+	TArray<TSubclassOf<UAgentAction>> actionsWithDesiredGoals;
+	allBranches = new TArray<TArray<TSubclassOf<UAgentAction>>>;
+	for (int i = 0; i < allActions.Num(); ++i)
 	{
 		// a tester 
-		TSubclassOf<UAgentAction>* currentAction = (*allActions)[i];
-		TArray<EGoalEnum>* goals = currentAction->GetDefaultObject()->GetGoals();
+		TSubclassOf<UAgentAction> currentAction = (allActions)[i];
+		TArray<EGoalEnum>* goals = currentAction->GetDefaultObject<UAgentAction>()->GetGoals();
 
 		for (int j = 0; j < goals->Num(); ++j)
 		{
@@ -109,16 +109,16 @@ bool UPlannerUtils::TryBuildTreeAction(TArray<TSubclassOf<UAgentAction>*>* allAc
 
 	for (int i = 0; i < actionsWithDesiredGoals.Num(); ++i)
 	{
-		TArray<TSubclassOf<UAgentAction>*>* branch = new TArray<TSubclassOf<UAgentAction>*>();
+		TArray<TSubclassOf<UAgentAction>>* branch = new TArray<TSubclassOf<UAgentAction>>();
 		branch->Add(actionsWithDesiredGoals[i]);
-		if (CheckAutoSuficentCondition(actionsWithDesiredGoals[i], worldState))
+		if (CheckAutoSuficentCondition(*actionsWithDesiredGoals[i], worldState))
 		{
-			allBranches->Add(branch);
+			allBranches->Add(*branch);
 			// :)
 		}
 		else
 		{
-			TryAddingActionWithDesiredGoal(allActions, worldState, actionsWithDesiredGoals[i]->GetDefaultObject()->GetConditions(),
+			TryAddingActionWithDesiredGoal(allActions, worldState, actionsWithDesiredGoals[i]->GetDefaultObject<UAgentAction>()->GetConditions(),
 			                               *branch);
 		}
 	}
@@ -128,10 +128,13 @@ bool UPlannerUtils::TryBuildTreeAction(TArray<TSubclassOf<UAgentAction>*>* allAc
 	return false;
 }
 
-bool UPlannerUtils::CheckAutoSuficentCondition(TSubclassOf<UAgentAction>* currentAction, TArray<EWorldStateEnum>* worldState)
+bool UPlannerUtils::CheckAutoSuficentCondition(TSubclassOf<UAgentAction> currentAction, TArray<EWorldStateEnum>* worldState)
 {
-	TArray<EWorldStateEnum>* conditionToAction = currentAction->GetDefaultObject()->GetConditions();
-	TArray<EWorldStateEnum> conditionToActionCopy = *conditionToAction;
+	TArray<EWorldStateEnum>* conditionToAction = currentAction->GetDefaultObject<UAgentAction>()->GetConditions();
+
+	if (worldState->Num() < conditionToAction->Num())
+		return false;
+	
 	for (int i = 0; i < conditionToAction->Num(); ++i)
 	{
 		bool isResolvedOneCondition = false;

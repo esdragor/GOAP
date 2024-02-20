@@ -19,7 +19,7 @@ public:
 	TArray<EWorldStateEnum>* GetConditions();
 	TArray<EWorldStateEnum>* GetResults();
 	TArray<EGoalEnum>* GetGoals();
-protected:
+public:
 	UPROPERTY(EditAnywhere)
 	TArray<EWorldStateEnum> conditions;
 	UPROPERTY(EditAnywhere)

@@ -28,7 +28,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 		TArray<TSubclassOf<UAgentAction>> allActions;
 	UPROPERTY(VisibleAnywhere)
-	TArray<UAgentAction*> currentActions; 
+	TArray<TSubclassOf<UAgentAction>> currentActions; 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

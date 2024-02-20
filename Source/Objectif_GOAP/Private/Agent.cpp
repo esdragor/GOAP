@@ -17,8 +17,8 @@ AAgent::AAgent()
 void AAgent::BeginPlay()
 {
 	Super::BeginPlay();
-	currentActions = UPlannerUtils::MakePlanActions(allActions, worldState, goals);
-	
+	currentActions = UPlannerUtils::MakePlanActions(allActions, &worldState, &goals);
+	UE_LOG(LogTemp, Warning, TEXT("nb of actions: %d"), currentActions.Num());
 }
 
 // Called every frame
