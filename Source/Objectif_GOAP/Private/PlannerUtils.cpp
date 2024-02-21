@@ -32,29 +32,29 @@ bool UPlannerUtils::TryAddingActionWithDesiredGoal(TArray<TSubclassOf<UAgentActi
 		// a tester 
 		TSubclassOf<UAgentAction> currentAction = (allActions)[i];
 		TArray<EWorldStateEnum> *worldStateResults = currentAction->GetDefaultObject<UAgentAction>()->GetResults();
-		TArray<EWorldStateEnum> *conditionsToCheck = conditionsForLinking;
+		TArray<EWorldStateEnum> conditionsToCheck = *conditionsForLinking;
 
 		for (int j = 0; j < worldStateResults->Num(); ++j)
 		{
-			if (conditionsToCheck->Contains((*worldStateResults)[j]))
+			if (conditionsToCheck.Contains((*worldStateResults)[j]))
 			{
-				conditionsToCheck->Remove((*worldStateResults)[j]);
+				conditionsToCheck.Remove((*worldStateResults)[j]);
 			}
 		}
 
 
-		if (conditionsToCheck->Num() > 0)
+		if (conditionsToCheck.Num() > 0)
 		{
 			for (int j = 0; j < worldState->Num(); ++j)
 			{
-				if (conditionsToCheck->Contains((*worldState)[j]))
+				if (conditionsToCheck.Contains((*worldState)[j]))
 				{
-					conditionsToCheck->Remove((*worldState)[j]);
+					conditionsToCheck.Remove((*worldState)[j]);
 				}
 			}
 		}
 
-		if (conditionsToCheck->Num() > 0)
+		if (conditionsToCheck.Num() > 0)
 		{
 			continue;
 		}
@@ -116,16 +116,21 @@ bool UPlannerUtils::TryBuildTreeAction(TArray<TSubclassOf<UAgentAction>> allActi
 			allBranches->Add(*branch);
 			// :)
 		}
-		// else
-		// {
-		// 	TryAddingActionWithDesiredGoal(allActions, worldState, actionsWithDesiredGoals[i]->GetDefaultObject<UAgentAction>()->GetConditions(),
-		// 	                               *branch);
-		// }
+		else
+		{
+			TryAddingActionWithDesiredGoal(allActions, worldState, actionsWithDesiredGoals[i]->GetDefaultObject<UAgentAction>()->GetConditions(),
+			                               *branch);
+		}
+	}
+	UE_LOG(LogTemp, Warning, TEXT("allBranches->Num() %d"), allBranches->Num());
+	if (allBranches->Num() == 0)
+	{
+		tree.Empty();
+		return false;
 	}
 
-
-	tree.Empty();
-	return false;
+tree = allBranches->operator[](0);
+	return true;
 }
 
 bool UPlannerUtils::CheckAutoSuficentCondition(TSubclassOf<UAgentAction> currentAction, TArray<EWorldStateEnum>* worldState)
