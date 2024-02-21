@@ -111,16 +111,16 @@ bool UPlannerUtils::TryBuildTreeAction(TArray<TSubclassOf<UAgentAction>> allActi
 	{
 		TArray<TSubclassOf<UAgentAction>>* branch = new TArray<TSubclassOf<UAgentAction>>();
 		branch->Add(actionsWithDesiredGoals[i]);
-		if (CheckAutoSuficentCondition(*actionsWithDesiredGoals[i], worldState))
+		if (CheckAutoSuficentCondition(actionsWithDesiredGoals[i], worldState))
 		{
 			allBranches->Add(*branch);
 			// :)
 		}
-		else
-		{
-			TryAddingActionWithDesiredGoal(allActions, worldState, actionsWithDesiredGoals[i]->GetDefaultObject<UAgentAction>()->GetConditions(),
-			                               *branch);
-		}
+		// else
+		// {
+		// 	TryAddingActionWithDesiredGoal(allActions, worldState, actionsWithDesiredGoals[i]->GetDefaultObject<UAgentAction>()->GetConditions(),
+		// 	                               *branch);
+		// }
 	}
 
 
@@ -130,24 +130,24 @@ bool UPlannerUtils::TryBuildTreeAction(TArray<TSubclassOf<UAgentAction>> allActi
 
 bool UPlannerUtils::CheckAutoSuficentCondition(TSubclassOf<UAgentAction> currentAction, TArray<EWorldStateEnum>* worldState)
 {
-	TArray<EWorldStateEnum>* conditionToAction = currentAction->GetDefaultObject<UAgentAction>()->GetConditions();
+	const TArray<EWorldStateEnum>* conditionToAction = currentAction->GetDefaultObject<UAgentAction>()->GetConditions();
 
-	if (worldState->Num() < conditionToAction->Num())
-		return false;
+	// if (worldState->Num() < conditionToAction->Num())
+	// 	return false;
 	
 	for (int i = 0; i < conditionToAction->Num(); ++i)
 	{
 		bool isResolvedOneCondition = false;
 		for (int j = 0; j < worldState->Num(); ++j)
 		{
-			if ((*conditionToAction)[i] == (*worldState)[j])
+			if ((conditionToAction)[i] == (worldState)[j])
 			{
 				isResolvedOneCondition = true;
 				break;
 			}
-			if (!isResolvedOneCondition)
-				return false; // je relance car une de mes conditions est pas dans le WS
 		}
+		if (!isResolvedOneCondition)
+			return false; // je relance car une de mes conditions est pas dans le WS
 	}
 	return true;
 }
