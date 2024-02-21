@@ -17,10 +17,14 @@ class OBJECTIF_GOAP_API UPlannerUtils : public UBlueprintFunctionLibrary
 public:
 	static TArray<TSubclassOf<UAgentAction>> MakePlanActions(TArray<TSubclassOf<UAgentAction>> allActions, TArray<EWorldStateEnum>* worldState, TArray<EGoalEnum>* goals);
 private:
-	static bool TryAddingActionWithDesiredGoal(TArray<TSubclassOf<UAgentAction>> allActions, TArray<EWorldStateEnum>* worldState, TArray<EWorldStateEnum> *conditionsForLinking, TArray<TSubclassOf<UAgentAction>> branch);
-	static bool TryBuildTreeAction(TArray<TSubclassOf<UAgentAction>> allActions, TArray<EWorldStateEnum>* worldState, EGoalEnum goal, TArray<TSubclassOf<UAgentAction>>& tree);
-	static bool CheckAutoSuficentCondition(TSubclassOf<UAgentAction> currentAction, TArray<EWorldStateEnum> *worldState);
 
+	static bool TryBuildTreeAction(TArray<TSubclassOf<UAgentAction>> allActions,
+	TArray<EWorldStateEnum>* worldState, EGoalEnum goal, TArray<TSubclassOf<UAgentAction>>& branch);
+	static bool TryCreateBranchAction(TArray<TSubclassOf<UAgentAction>> allActions,
+		TArray<EWorldStateEnum>* worldState,
+		TArray<EWorldStateEnum>* conditions, TArray<TSubclassOf<UAgentAction>>* branch, float maxCost);
+	static float GetBranchCost(TArray<TSubclassOf<UAgentAction>> actions);
 private:
-	static TArray<TArray<TSubclassOf<UAgentAction>>> *allBranches;
+
+
 };
