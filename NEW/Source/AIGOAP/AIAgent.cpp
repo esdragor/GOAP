@@ -17,12 +17,12 @@ AAIAgent::AAIAgent()
 void AAIAgent::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	NeedToSetupPlan();
 }
 
 void AAIAgent::NeedToSetupPlan()
 {
-	// currentActions = UPlannerUtils::MakePlanActions(allActions, &worldState, &goals);
+	currentActions = UPlannerUtils::MakePlanActions(allActions, &worldState, &goals);
 	UE_LOG(LogTemp, Warning, TEXT("nb of actions: %d"), currentActions.Num());
 }
 

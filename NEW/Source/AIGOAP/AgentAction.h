@@ -10,7 +10,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(ClassGroup=(Custom), BlueprintType, Blueprintable)
 class AIGOAP_API UAgentAction : public UObject
 {
 	GENERATED_BODY()
