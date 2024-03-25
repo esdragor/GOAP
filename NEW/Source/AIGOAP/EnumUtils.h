@@ -18,3 +18,11 @@ enum class EWorldStateEnum
 	SteelWood,
 	Attack,
 };
+
+UENUM(BlueprintType)
+enum class EStateActionEnum : uint8
+{
+	NotStarted,
+	InProgress,
+	Finished
+};
