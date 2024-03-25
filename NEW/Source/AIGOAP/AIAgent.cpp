@@ -22,7 +22,7 @@ void AAIAgent::BeginPlay()
 
 void AAIAgent::NeedToSetupPlan()
 {
-	currentActions = UPlannerUtils::MakePlanActions(allActions, &worldState, &goals);
+	// currentActions = UPlannerUtils::MakePlanActions(allActions, &worldState, &goals);
 	UE_LOG(LogTemp, Warning, TEXT("nb of actions: %d"), currentActions.Num());
 }
 

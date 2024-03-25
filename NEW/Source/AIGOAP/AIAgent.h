@@ -3,8 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "EnumUtils.h"
 #include "GameFramework/Character.h"
 #include "AIAgent.generated.h"
+
+class UAgentAction;
 
 UCLASS()
 class AIGOAP_API AAIAgent : public ACharacter

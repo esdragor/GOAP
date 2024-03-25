@@ -3,9 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "EnumUtils.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "PlannerUtils.generated.h"
 
+class UAgentAction;
 /**
  * 
  */
